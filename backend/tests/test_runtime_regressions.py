@@ -579,6 +579,158 @@ def test_readiness_cache_coalesces_concurrent_dependency_probes() -> None:
     assert current.calls == 2
 
 
+def test_readiness_deadline_bounds_concurrent_waiters_and_recovers() -> None:
+    release = threading.Event()
+    completed = threading.Event()
+
+    class Services:
+        production = True
+        _readiness_lock = threading.Lock()
+        _readiness_cache_until = 0.0
+        _readiness_cache_value = ()
+        _readiness_cache_seconds = 5.0
+        _readiness_timeout_seconds = 0.05
+        calls = 0
+
+        @property
+        def production_missing(self):
+            self.calls += 1
+            assert release.wait(5)
+            completed.set()
+            return ()
+
+        readiness_missing = AppServices.readiness_missing
+
+    current = Services()
+    try:
+        started = time.monotonic()
+        with ThreadPoolExecutor(max_workers=16) as executor:
+            results = list(executor.map(lambda _: current.readiness_missing(), range(16)))
+        assert time.monotonic() - started < 1.0
+        assert results == [("Dependency readiness timed out",)] * 16
+        assert current.calls == 1
+        # Repeated expired requests must not accumulate abandoned probe threads.
+        assert current.readiness_missing() == ("Dependency readiness timed out",)
+        assert current.calls == 1
+        release.set()
+        assert completed.wait(1)
+        assert current.readiness_missing() == ()
+        assert current.calls == 1
+    finally:
+        release.set()
+
+
+def test_readiness_deadline_includes_lock_wait() -> None:
+    current = SimpleNamespace(
+        production=True,
+        _readiness_lock=threading.Lock(),
+        _readiness_timeout_seconds=0.02,
+    )
+    with current._readiness_lock:
+        started = time.monotonic()
+        assert AppServices.readiness_missing(current) == ("Dependency readiness timed out",)
+        assert time.monotonic() - started < 0.5
+
+
+def test_shutdown_defers_resource_close_until_active_probe_finishes() -> None:
+    from concurrent.futures import Future
+
+    current = AppServices.__new__(AppServices)
+    current._readiness_future = Future()
+    closed = []
+    for name in ("answerer", "embedding_provider", "milvus", "mysql", "redis", "auth"):
+        setattr(current, name, SimpleNamespace(close=lambda name=name: closed.append(name)))
+    current.close()
+    current.close()
+    assert current._closed and not closed
+    current._readiness_future.set_result(("Service shutting down",))
+    assert len(closed) == 6
+
+
+def test_http_readiness_returns_503_within_budget(monkeypatch) -> None:
+    release = threading.Event()
+
+    class Services:
+        production = True
+        mode = "production"
+        api_tokens = ()
+        auth = object()
+        _readiness_lock = threading.Lock()
+        _readiness_cache_until = 0.0
+        _readiness_cache_value = ()
+        _readiness_cache_seconds = 5.0
+        _readiness_timeout_seconds = 0.05
+        readiness_missing = AppServices.readiness_missing
+
+        @property
+        def production_missing(self):
+            release.wait(5)
+            return ()
+
+    monkeypatch.setattr(main_module, "get_services", lambda: Services())
+    try:
+        client = TestClient(main_module.app)
+        started = time.monotonic()
+        response = client.get("/api/ready")
+        assert response.status_code == 503
+        assert time.monotonic() - started < 1
+        assert response.json()["detail"]["missing"] == ["Dependency readiness timed out"]
+    finally:
+        release.set()
+
+
+@pytest.mark.parametrize("phase", ["probe", "generation", "truncated"])
+def test_model_empty_or_truncated_response_is_not_success(monkeypatch, phase) -> None:
+    response = SimpleNamespace(choices=[SimpleNamespace(
+        message=SimpleNamespace(content="partial" if phase == "truncated" else ""),
+        finish_reason="length" if phase == "truncated" else "stop",
+    )])
+    closed = []
+    client = SimpleNamespace(chat=SimpleNamespace(completions=SimpleNamespace(create=lambda **_: response)),
+                             close=lambda: closed.append(True))
+    prompt = SimpleNamespace(format_messages=lambda **_: [])
+    monkeypatch.setenv("MEDGUIDE_MODE", "production")
+    monkeypatch.setattr(OpenAIAnswerer, "_create_resources", lambda _: (client, prompt))
+    answerer = OpenAIAnswerer(api_key="synthetic-key", model="synthetic-model")
+    if phase == "probe":
+        assert answerer.ensure_ready() is False
+    else:
+        answerer.available = True
+        assert answerer.generate("synthetic", "low", "synthetic context") is None
+    assert answerer.available is False
+    assert answerer.last_error == "ValueError"
+    assert closed == [True]
+
+
+def test_readiness_probe_exception_is_sanitized_and_cached(caplog) -> None:
+    class Services:
+        production = True
+        _readiness_lock = threading.Lock()
+        _readiness_cache_until = 0.0
+        _readiness_cache_value = ()
+        _readiness_cache_seconds = 5.0
+        calls = 0
+
+        @property
+        def production_missing(self):
+            self.calls += 1
+            raise RuntimeError("private provider credential")
+
+        readiness_missing = AppServices.readiness_missing
+
+    current = Services()
+    assert current.readiness_missing() == ("Dependency readiness failed",)
+    assert current.readiness_missing() == ("Dependency readiness failed",)
+    assert current.calls == 1
+    assert "private provider credential" not in caplog.text
+
+
+@pytest.mark.parametrize("value,expected", [("nan", 5), ("inf", 5), ("bad", 5), ("0", 0.1), ("120", 30), ("2", 2)])
+def test_readiness_timeout_configuration(monkeypatch, value, expected) -> None:
+    monkeypatch.setenv("MEDGUIDE_READINESS_TIMEOUT_SECONDS", value)
+    assert main_module._readiness_timeout_seconds() == expected
+
+
 def test_answerer_is_not_ready_until_model_probe_succeeds(monkeypatch) -> None:
     class Completions:
         calls = 0

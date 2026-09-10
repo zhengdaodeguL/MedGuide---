@@ -12,6 +12,7 @@ import logging
 import time
 from copy import deepcopy
 from collections.abc import AsyncIterator
+from concurrent.futures import Future, TimeoutError as FutureTimeoutError
 from contextlib import asynccontextmanager
 from pathlib import Path
 from typing import Any
@@ -148,6 +149,14 @@ def _readiness_cache_seconds() -> float:
         return 5.0
 
 
+def _readiness_timeout_seconds() -> float:
+    try:
+        value = float(os.getenv("MEDGUIDE_READINESS_TIMEOUT_SECONDS", "5"))
+        return max(0.1, min(value, 30.0)) if math.isfinite(value) else 5.0
+    except ValueError:
+        return 5.0
+
+
 class SessionCreateResponse(BaseModel):
     session_id: str
     state: dict[str, Any]
@@ -232,6 +241,8 @@ class AppServices:
         self._readiness_cache_until = 0.0
         self._readiness_cache_value: tuple[str, ...] = ()
         self._readiness_cache_seconds = _readiness_cache_seconds()
+        self._readiness_timeout_seconds = _readiness_timeout_seconds()
+        self._readiness_future: Future[tuple[str, ...]] | None = None
         self.knowledge_backend = _knowledge_backend(production=production)
         milvus_uri = (os.getenv("MILVUS_URI") or "").strip()
         mysql_dsn = (os.getenv("MYSQL_DSN") or "").strip()
@@ -287,9 +298,19 @@ class AppServices:
 
     def close(self) -> None:
         """Release optional external resources in reverse dependency order."""
-        if getattr(self, "_closed", False):
-            return
-        self._closed = True
+        with getattr(self, "_readiness_lock", threading.Lock()):
+            if getattr(self, "_closed", False):
+                return
+            self._closed = True
+            future = getattr(self, "_readiness_future", None)
+        # Do not close a client while the bounded background probe is using it.
+        # Closed services reject new work; the one existing probe owns cleanup.
+        if future is not None:
+            future.add_done_callback(lambda _: self._close_resources())
+        else:
+            self._close_resources()
+
+    def _close_resources(self) -> None:
         for resource in (self.answerer, self.embedding_provider, self.milvus, self.mysql, self.redis, self.auth):
             close = getattr(resource, "close", None) or getattr(resource, "shutdown", None)
             if callable(close):
@@ -317,6 +338,8 @@ class AppServices:
         if getattr(self, "structured_data_enabled", True):
             required_adapters.append(self.mysql)
         for adapter in required_adapters:
+            if getattr(self, "_closed", False):
+                return ("Service shutting down",)
             ensure_ready = getattr(adapter, "ensure_ready", None)
             if callable(ensure_ready):
                 try:
@@ -366,20 +389,53 @@ class AppServices:
         return (f"BM25 index ({detail})",)
 
     def readiness_missing(self) -> tuple[str, ...]:
-        """Coalesce concurrent dependency probes and reuse their short-lived result."""
+        """Bound each request's wait while sharing at most one dependency probe."""
         if not self.production:
             return self.knowledge_missing
-        now = time.monotonic()
-        if now < self._readiness_cache_until:
-            return self._readiness_cache_value
-        with self._readiness_lock:
+        deadline = time.monotonic() + getattr(self, "_readiness_timeout_seconds", 5.0)
+        timed_out = ("Dependency readiness timed out",)
+        if not self._readiness_lock.acquire(timeout=max(0.0, deadline - time.monotonic())):
+            return timed_out
+        try:
+            if getattr(self, "_closed", False):
+                return ("Service shutting down",)
             now = time.monotonic()
             if now < self._readiness_cache_until:
                 return self._readiness_cache_value
-            missing = self.production_missing
-            self._readiness_cache_value = missing
-            self._readiness_cache_until = time.monotonic() + self._readiness_cache_seconds
-            return missing
+            future = getattr(self, "_readiness_future", None)
+            if future is None:
+                future = Future()
+                self._readiness_future = future
+
+                def probe() -> None:
+                    try:
+                        missing = self.production_missing
+                    except Exception as exc:
+                        logger.warning("Dependency readiness failed: %s", type(exc).__name__)
+                        missing = ("Dependency readiness failed",)
+                    with self._readiness_lock:
+                        if getattr(self, "_closed", False):
+                            missing = ("Service shutting down",)
+                        self._readiness_cache_value = missing
+                        self._readiness_cache_until = time.monotonic() + self._readiness_cache_seconds
+                    future.set_result(missing)
+                    with self._readiness_lock:
+                        self._readiness_future = None
+
+                # An unresponsive SDK must not consume every HTTP worker or
+                # prevent shutdown. Keep the single probe until it completes;
+                # request timeouts must never spawn replacement probe threads.
+                try:
+                    threading.Thread(target=probe, name="medguide-readiness", daemon=True).start()
+                except Exception:
+                    self._readiness_future = None
+                    return ("Dependency readiness failed",)
+        finally:
+            self._readiness_lock.release()
+        try:
+            return future.result(timeout=max(0.0, deadline - time.monotonic()))
+        except FutureTimeoutError:
+            return timed_out
 
 
 services: AppServices | None = None

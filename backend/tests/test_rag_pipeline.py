@@ -252,7 +252,8 @@ def test_catalog_external_medical_sources_are_traceable() -> None:
     documents = load_catalog(root / "data" / "knowledge" / "catalog.json")
     externally_sourced = [document for document in documents if document.id != "faq-boundary-001"]
 
-    assert len(externally_sourced) == 10
+    assert len(externally_sourced) == len(documents) - 1
+    assert externally_sourced
     assert all(document.source_url.startswith("https://") for document in externally_sourced)
     assert {document.source_url.split("/", 3)[2] for document in externally_sourced} <= {
         "www.nhs.uk",

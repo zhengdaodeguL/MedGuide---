@@ -1,4 +1,4 @@
-"""Fail the build when the three version declarations drift apart.
+"""Fail the build when release version declarations drift apart.
 
 The released version lives in ``backend/app/version.py``.  ``frontend/package.json``
 and the newest ``CHANGELOG.md`` entry must agree with it, otherwise a release can
@@ -44,6 +44,18 @@ def changelog_version() -> str:
     raise ValueError("CHANGELOG.md has no released version heading")
 
 
+def lock_versions() -> dict[str, str]:
+    payload = json.loads((ROOT / "frontend" / "package-lock.json").read_text(encoding="utf-8"))
+    versions = {
+        "frontend/package-lock.json": payload.get("version"),
+        "frontend/package-lock.json packages[root]": payload.get("packages", {}).get("", {}).get("version"),
+    }
+    for source, version in versions.items():
+        if not isinstance(version, str) or not version.strip():
+            raise ValueError(f"{source} does not declare a version")
+    return versions
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description="Check that version declarations agree")
     parser.add_argument("--expect", help="assert every declaration equals this version")
@@ -53,6 +65,7 @@ def main(argv: list[str] | None = None) -> int:
         "backend/app/version.py": backend_version(),
         "frontend/package.json": frontend_version(),
         "CHANGELOG.md": changelog_version(),
+        **lock_versions(),
     }
     distinct = set(found.values())
     if len(distinct) != 1:

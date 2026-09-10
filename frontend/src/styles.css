@@ -147,3 +147,6 @@ button:focus-visible, input:focus-visible, textarea:focus-visible, [tabindex]:fo
 .evidence-source a { display: inline-flex; align-items: center; gap: 2px; margin-left: auto; color: var(--teal-700); font-weight: 600; text-decoration: none; }
 .evidence-source a:hover { text-decoration: underline; }
 .evidence-source a:focus-visible { border-radius: 2px; outline: 2px solid var(--teal-700); outline-offset: 2px; }
+
+.content-license { margin: 0; padding: 16px 20px; color: var(--ink-500); font-size: 12px; line-height: 1.6; overflow-wrap: anywhere; }
+.content-license a { color: var(--teal-700); }

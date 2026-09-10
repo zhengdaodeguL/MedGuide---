@@ -416,6 +416,12 @@ class MedGuideWorkflow:
                 break
         if "sex" not in profile:
             for clause in patient_clauses:
+                # Common compact history: “32岁男性，咳嗽三天”. Keep this
+                # separate from relatives and explicitly negated descriptions.
+                compact = re.search(r"(?<!\d)\d{1,3}\s*岁\s*(男性|女性|男士|女士|男|女)(?!朋友|儿|子)", clause)
+                if compact and not re.search(r"不是|并非|没有|否认", clause[:compact.start()]):
+                    profile["sex"] = "女" if compact.group(1) in {"女性", "女士", "女"} else "男"
+                    break
                 if re.search(r"(?:^|[：:]|患者(?:为|是)?|本人(?:为|是)?|我(?:是|为)?)\s*(?:女性|女士|女)\b", clause):
                     profile["sex"] = "女"
                     break
@@ -514,6 +520,16 @@ class MedGuideWorkflow:
             state["citations"] = []
             return state
         query = self.router.rewrite(state.get("normalized_message", ""), state.get("profile", {}))
+        if intent == "disease":
+            # Demographics and denied symptoms should not retrieve unrelated
+            # disease advice merely because they also occur in a source body.
+            profile = state.get("profile", {})
+            symptoms = profile.get("symptoms", [])
+            clauses = self._profile_clauses(state.get("normalized_message", ""))
+            focused = [clause for clause in clauses if self._patient_clause(clause)
+                       and any(self._asserted_profile_term(clause, symptom) for symptom in symptoms)]
+            if focused:
+                query = "；".join(focused)
         state["rewritten_query"] = query
         state["citations"] = [citation.as_dict() for citation in self.retriever.search(query, intent, top_k=4)]
         return state

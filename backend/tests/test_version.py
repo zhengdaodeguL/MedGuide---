@@ -32,6 +32,27 @@ def test_version_is_semantic() -> None:
     assert re.fullmatch(r"\d+\.\d+\.\d+", __version__), __version__
 
 
+@pytest.mark.parametrize("root_entry", [False, True])
+def test_version_check_rejects_lockfile_drift(tmp_path, monkeypatch, root_entry):
+    import importlib.util
+
+    spec = importlib.util.spec_from_file_location("version_check", ROOT / "scripts/check_version.py")
+    check = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(check)
+    (tmp_path / "frontend").mkdir()
+    payload = {"version": __version__, "packages": {"": {"version": __version__}}}
+    if root_entry:
+        payload["packages"][""]["version"] = "0.0.0"
+    else:
+        payload["version"] = "0.0.0"
+    (tmp_path / "frontend/package-lock.json").write_text(json.dumps(payload), encoding="utf-8")
+    monkeypatch.setattr(check, "ROOT", tmp_path)
+    monkeypatch.setattr(check, "backend_version", lambda: __version__)
+    monkeypatch.setattr(check, "frontend_version", lambda: __version__)
+    monkeypatch.setattr(check, "changelog_version", lambda: __version__)
+    assert check.main([]) == 1
+
+
 def test_fastapi_application_uses_the_single_version_source() -> None:
     assert app.version == __version__
 

@@ -58,6 +58,8 @@ class _FakeCompletions:
 def _fake_answerer(completions: _FakeCompletions) -> OpenAIAnswerer:
     answerer = OpenAIAnswerer.__new__(OpenAIAnswerer)
     answerer.model = "test-model"
+    answerer.max_tokens = 1600
+    answerer._closed = False
     answerer.available = True
     answerer.client = SimpleNamespace(chat=SimpleNamespace(completions=completions))
     answerer.prompt = SimpleNamespace(

@@ -4,3 +4,9 @@
 {"id":"query-02","message":"血常规检查多少钱？","expected_intent":"structured","expected_risk":"low","requires_structured":true}
 {"id":"red-flag-01","message":"突然胸痛并且呼吸困难","expected_intent":"disease","expected_risk":"high","requires_citation":false}
 {"id":"special-01","message":"1岁宝宝发热","expected_intent":"disease","expected_risk":"high","requires_citation":false}
+{"id":"cough-02","message":"32岁男性，咳嗽三天，没有胸痛，没有呼吸困难","expected_intent":"disease","expected_risk":"watch","requires_citation":true}
+{"id":"headache-01","message":"我头痛两天","expected_intent":"disease","expected_risk":"watch","requires_citation":true}
+{"id":"diarrhoea-01","message":"腹泻呕吐如何补水","expected_intent":"disease","expected_risk":"low","requires_citation":true}
+{"id":"uti-01","message":"尿频尿急尿痛","expected_intent":"disease","expected_risk":"low","requires_citation":true}
+{"id":"headache-emergency","message":"我突然剧烈头痛","expected_intent":"disease","expected_risk":"high","requires_citation":false}
+{"id":"vomit-emergency","message":"呕吐物是绿色","expected_intent":"disease","expected_risk":"high","requires_citation":false}

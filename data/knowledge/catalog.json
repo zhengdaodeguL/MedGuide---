@@ -3,41 +3,64 @@
     "id": "disease-cold-001",
     "title": "普通感冒的居家观察要点",
     "category": "disease",
-    "source": "NHS（英国国民保健署）",
+    "source": "MedGuide 中文整理（OGL-3.0）",
     "source_url": "https://www.nhs.uk/conditions/common-cold/",
-    "updated_at": "2024-03-22",
-    "tags": ["感冒", "咳嗽", "咽痛"],
-    "text": "普通感冒常见鼻塞、流涕、咽痛、咳嗽和低热。多数情况下可休息、补充水分并观察症状变化。若高热持续不退、呼吸困难、胸痛、意识改变或症状明显加重，应及时线下就医。"
+    "updated_at": "来源日期待复核",
+    "tags": [
+      "感冒",
+      "咳嗽",
+      "咽痛"
+    ],
+    "text": "普通感冒常见鼻塞、流涕、咽痛、咳嗽和低热。多数情况下可休息、补充水分并观察症状变化。若高热持续不退、呼吸困难、胸痛、意识改变或症状明显加重，应及时线下就医。",
+    "license": "OGL-3.0"
   },
   {
     "id": "disease-fever-001",
-    "title": "发热的就医指引",
+    "title": "成人发热的观察与就医指引",
     "category": "disease",
-    "source": "MedlinePlus / NLM / NIH",
-    "source_url": "https://medlineplus.gov/ency/article/003090.htm",
-    "updated_at": "2025-10-01",
-    "tags": ["发热", "体温", "感染"],
-    "text": "发热需要结合体温、持续时间、年龄、伴随症状和基础疾病判断就医紧迫性。婴幼儿、高龄人群及免疫功能受影响人群出现发热时，应更早咨询医生。"
+    "source": "MedGuide 中文整理（OGL-3.0）",
+    "source_url": "https://www.nhs.uk/symptoms/fever-in-adults/",
+    "updated_at": "2023-05-24",
+    "tags": [
+      "发热",
+      "体温",
+      "感染"
+    ],
+    "text": "成人体温达到38℃或以上通常属于发热。可休息、补充水分并记录体温和症状变化；自我照护后没有改善或症状加重，应及时就医。此条资料仅针对成人，不能直接套用于婴幼儿。",
+    "collected_at": "2026-09-10",
+    "license": "OGL-3.0"
   },
   {
     "id": "drug-ibuprofen-001",
-    "title": "布洛芬用药前的核对清单",
+    "title": "成人使用布洛芬前的核对清单",
     "category": "drug",
-    "source": "MedlinePlus / NLM / NIH",
-    "source_url": "https://medlineplus.gov/druginfo/meds/a682159.html",
-    "updated_at": "2023-09-15",
-    "tags": ["布洛芬", "止痛", "退热"],
-    "text": "使用布洛芬前应核对年龄、过敏史、消化道溃疡或出血史、肾功能情况、妊娠状态以及是否同时使用其他解热镇痛药。具体剂量和疗程以药品说明书及医生或药师建议为准。"
+    "source": "MedGuide 中文整理（OGL-3.0）",
+    "source_url": "https://www.nhs.uk/medicines/ibuprofen-for-adults/",
+    "updated_at": "2025-08-27",
+    "tags": [
+      "布洛芬",
+      "止痛",
+      "退热"
+    ],
+    "text": "成人使用布洛芬前应核对药物过敏史、胃溃疡或出血史、哮喘、心肝肾疾病、凝血问题以及同时使用的药物。孕期或备孕时先咨询医生或药师，不自行使用。不要自行与其他非甾体抗炎药叠加服用；具体剂量和疗程以当前药品说明书及医生或药师建议为准。",
+    "collected_at": "2026-09-10",
+    "license": "OGL-3.0"
   },
   {
     "id": "drug-loratadine-001",
-    "title": "氯雷他定与过敏症状",
+    "title": "氯雷他定用药前需要核对什么",
     "category": "drug",
-    "source": "MedlinePlus / NLM / NIH",
-    "source_url": "https://medlineplus.gov/druginfo/meds/a697038.html",
-    "updated_at": "2026-03-15",
-    "tags": ["氯雷他定", "过敏", "皮疹"],
-    "text": "氯雷他定常用于缓解部分过敏相关症状。用药前应核对过敏史、肝肾功能、妊娠或哺乳情况，并阅读当前包装说明。若出现喉头紧、呼吸困难或面唇肿胀，应立即就医。"
+    "source": "MedGuide 中文整理（OGL-3.0）",
+    "source_url": "https://www.nhs.uk/medicines/loratadine/who-can-and-cannot-take-loratadine/",
+    "updated_at": "2025-04-22",
+    "tags": [
+      "氯雷他定",
+      "过敏",
+      "皮疹"
+    ],
+    "text": "使用氯雷他定前，如有药物或辅料过敏、严重肝功能问题、癫痫或惊厥风险，应向医生或药师说明。准备做过敏测试时也需告知正在使用的药物，由医务人员安排用药和检查，不自行停药。年龄、制剂和具体用法应核对当前药品说明书。",
+    "collected_at": "2026-09-10",
+    "license": "OGL-3.0"
   },
   {
     "id": "exam-cbc-001",
@@ -46,7 +69,11 @@
     "source": "MedlinePlus / NLM / NIH",
     "source_url": "https://medlineplus.gov/lab-tests/complete-blood-count-cbc/",
     "updated_at": "来源页未标注",
-    "tags": ["血常规", "检查", "检验"],
+    "tags": [
+      "血常规",
+      "检查",
+      "检验"
+    ],
     "text": "血常规可提供红细胞、白细胞、血小板等指标，帮助医生结合症状判断是否需要进一步检查。单个指标异常不能独立用于诊断，报告应由医生结合病史解释。"
   },
   {
@@ -56,28 +83,42 @@
     "source": "美国食品药品监督管理局（FDA）",
     "source_url": "https://www.fda.gov/radiation-emitting-products/medical-imaging/medical-x-ray-imaging",
     "updated_at": "2023-08-15",
-    "tags": ["胸片", "影像", "孕期"],
+    "tags": [
+      "胸片",
+      "影像",
+      "孕期"
+    ],
     "text": "预约胸部影像检查时，应主动告知工作人员是否怀孕或可能怀孕，并说明近期是否做过相同检查。检查应围绕明确的临床问题，由临床医生根据预期获益和辐射风险判断是否必要。"
   },
   {
     "id": "department-respiratory-001",
     "title": "呼吸道症状的就诊方向建议",
     "category": "department",
-    "source": "NHS；MedGuide 就诊方向映射",
+    "source": "MedGuide 中文整理（OGL-3.0）",
     "source_url": "https://www.nhs.uk/symptoms/shortness-of-breath/",
-    "updated_at": "2024-01-30",
-    "tags": ["呼吸内科", "咳嗽", "气促"],
-    "text": "以咳嗽、咽痛、气促等呼吸道症状为主且无急症信号时，可优先咨询呼吸内科或全科医学科。出现胸痛、呼吸困难、口唇发紫等信号时应直接前往急诊。"
+    "updated_at": "来源日期待复核",
+    "tags": [
+      "呼吸内科",
+      "咳嗽",
+      "气促"
+    ],
+    "text": "以咳嗽、咽痛、气促等呼吸道症状为主且无急症信号时，可优先咨询呼吸内科或全科医学科。出现胸痛、呼吸困难、口唇发紫等信号时应直接前往急诊。",
+    "license": "OGL-3.0"
   },
   {
     "id": "department-skin-001",
     "title": "皮疹与瘙痒的就诊方向建议",
     "category": "department",
-    "source": "NHS；MedGuide 就诊方向映射",
+    "source": "MedGuide 中文整理（OGL-3.0）",
     "source_url": "https://www.nhs.uk/conditions/allergies/",
-    "updated_at": "2026-03-05",
-    "tags": ["皮肤科", "皮疹", "瘙痒"],
-    "text": "以新发皮疹、瘙痒或局部红肿为主时，可优先咨询皮肤科。若皮疹伴随面唇肿胀、喉头紧或呼吸困难，应视为紧急情况处理。"
+    "updated_at": "来源日期待复核",
+    "tags": [
+      "皮肤科",
+      "皮疹",
+      "瘙痒"
+    ],
+    "text": "以新发皮疹、瘙痒或局部红肿为主时，可优先咨询皮肤科。若皮疹伴随面唇肿胀、喉头紧或呼吸困难，应视为紧急情况处理。",
+    "license": "OGL-3.0"
   },
   {
     "id": "faq-visit-001",
@@ -86,7 +127,11 @@
     "source": "Telehealth.HHS.gov；MedGuide 隐私规则",
     "source_url": "https://telehealth.hhs.gov/providers/preparing-patients-for-telehealth/helping-patients-prepare-for-their-appointment",
     "updated_at": "2025-05-29",
-    "tags": ["远程咨询", "病史", "准备"],
+    "tags": [
+      "远程咨询",
+      "病史",
+      "准备"
+    ],
     "text": "建议准备年龄、性别、主要症状、开始时间、变化趋势、伴随症状、既往病史、过敏史和正在使用的药物。不要上传身份证号、完整病历号等不必要的身份信息。"
   },
   {
@@ -96,7 +141,11 @@
     "source": "London Ambulance Service NHS Trust",
     "source_url": "https://www.londonambulance.nhs.uk/our-services/emergency-care/calling-999/",
     "updated_at": "2026-08-12",
-    "tags": ["急诊", "风险", "安全"],
+    "tags": [
+      "急诊",
+      "风险",
+      "安全"
+    ],
     "text": "胸痛、呼吸困难、意识改变、突发单侧无力、大量出血、严重过敏反应等情况不适合继续等待线上回复，应立即联系当地急救服务或前往最近急诊。"
   },
   {
@@ -105,7 +154,78 @@
     "category": "faq",
     "source": "MedGuide 医疗知识库 / 服务说明",
     "updated_at": "2026-06-01",
-    "tags": ["MedGuide", "服务边界", "替代医生", "诊断"],
+    "tags": [
+      "MedGuide",
+      "服务边界",
+      "替代医生",
+      "诊断"
+    ],
     "text": "MedGuide 用于整理健康信息、筛查风险信号、解释常见医学资料和推荐就诊方向，不能替代执业医生完成诊断、开具处方或调整用药。症状持续、加重或存在高风险信号时，应及时联系医疗机构。"
+  },
+  {
+    "id": "disease-cough-001",
+    "title": "咳嗽的观察与就医时机",
+    "category": "disease",
+    "source": "MedGuide 中文整理（OGL-3.0）",
+    "source_url": "https://www.nhs.uk/symptoms/cough/",
+    "updated_at": "2023-12-08",
+    "tags": [
+      "咳嗽",
+      "咯血",
+      "久咳"
+    ],
+    "text": "咳嗽常在3至4周内缓解，可休息、补充水分并留意变化。持续超过3周、体重无故下降或免疫功能受影响时，应咨询医生。咳嗽迅速加重、伴胸痛、呼吸困难或咯血时需要及时就医评估，不宜继续等待线上回复。",
+    "license": "OGL-3.0",
+    "collected_at": "2026-09-10"
+  },
+  {
+    "id": "disease-headache-001",
+    "title": "头痛时需要留意的危险信号",
+    "category": "disease",
+    "source": "MedGuide 中文整理（OGL-3.0）",
+    "source_url": "https://www.nhs.uk/symptoms/headaches/",
+    "updated_at": "2024-04-17",
+    "tags": [
+      "头痛",
+      "头疼",
+      "头部疼痛"
+    ],
+    "text": "一般头痛可先休息、补充水分、规律进食，留意是否反复或加重。突然发生极剧烈头痛，或头痛伴肢体无力、麻木、说话或行走困难、意识改变、视力丧失，以及发热伴颈部僵硬时，应立即联系当地急救服务。",
+    "license": "OGL-3.0",
+    "collected_at": "2026-09-10"
+  },
+  {
+    "id": "disease-diarrhoea-001",
+    "title": "腹泻与呕吐时的补水和就医提示",
+    "category": "disease",
+    "source": "MedGuide 中文整理（OGL-3.0）",
+    "source_url": "https://www.nhs.uk/symptoms/diarrhoea-and-vomiting/",
+    "updated_at": "2023-12-21",
+    "tags": [
+      "腹泻",
+      "拉肚子",
+      "呕吐",
+      "脱水"
+    ],
+    "text": "腹泻或呕吐时要休息并少量多次补充液体。持续无法保留液体、出现血便、尿量减少等脱水迹象时应及时就医。呕血或咖啡渣样呕吐物、绿色呕吐物、突然剧烈腹痛或意识改变属于紧急信号，应立即寻求急救。",
+    "license": "OGL-3.0",
+    "collected_at": "2026-09-10"
+  },
+  {
+    "id": "disease-uti-001",
+    "title": "尿频尿急尿痛的就医提示",
+    "category": "disease",
+    "source": "MedGuide 中文整理（OGL-3.0）",
+    "source_url": "https://www.nhs.uk/conditions/urinary-tract-infections-utis/",
+    "updated_at": "2025-07-11",
+    "tags": [
+      "尿频",
+      "尿急",
+      "尿痛",
+      "尿路感染"
+    ],
+    "text": "尿频、尿急、排尿疼痛可见于尿路感染，但需要医生结合具体情况判断。男性、孕期、儿童、老年人或免疫功能受影响者，以及伴发热、腰背部疼痛或血尿者，应及时就医。伴意识或言语异常时应立即寻求急救。不要自行选择抗菌药物或套用他人的处方。",
+    "license": "OGL-3.0",
+    "collected_at": "2026-09-10"
   }
 ]
