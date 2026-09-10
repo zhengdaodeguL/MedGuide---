@@ -2,6 +2,13 @@
 
 本文件记录 MedGuide 的对外版本变更。版本号遵循 [语义化版本](https://semver.org/lang/zh-CN/)。
 
+## [0.1.1] - 2026-09-10
+
+### 变更
+
+- 统一对外描述：界面、文档、节点标签与后端提示改用“健康信息整理与就医指引”口径。
+- 演示语料的标题与来源名同步改写；`corpus_generation` 随之变化，部署时按知识入库流程重建 BM25 快照。
+
 ## [0.1.0] - 2026-09-10
 
 ### 新增
@@ -20,4 +27,5 @@
 - 仓库自带的 `data/knowledge/catalog.json` 是体量很小的演示语料，仅用于跑通链路与本地验证，
   不构成可用于生产的医学知识库。上线前必须替换为自行取得授权的语料并重建索引。
 
-[0.1.0]: https://github.com/zhengdaodeguL/MedGuide--/releases/tag/v0.1.0
+[0.1.1]: https://github.com/zhengdaodeguL/MedGuide---/releases/tag/v0.1.1
+[0.1.0]: https://github.com/zhengdaodeguL/MedGuide---/releases/tag/v0.1.0
