@@ -1,0 +1,34 @@
+name: 缺陷报告
+description: 报告可复现的功能、部署或界面问题
+title: "[Bug] "
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: 请勿提交真实患者信息、密码、访问令牌、Cookie 或完整日志。安全漏洞请使用 Private vulnerability reporting。
+  - type: textarea
+    id: summary
+    attributes:
+      label: 问题概述
+      description: 简要说明实际行为与预期行为。
+    validations:
+      required: true
+  - type: textarea
+    id: reproduce
+    attributes:
+      label: 复现步骤
+      description: 使用合成数据给出最短复现步骤。
+    validations:
+      required: true
+  - type: textarea
+    id: environment
+    attributes:
+      label: 环境
+      description: 操作系统、Python/Node 版本、运行模式和部署方式。请删除敏感值。
+    validations:
+      required: true
+  - type: textarea
+    id: evidence
+    attributes:
+      label: 脱敏证据
+      description: 可附截图、错误类型或最小日志片段。

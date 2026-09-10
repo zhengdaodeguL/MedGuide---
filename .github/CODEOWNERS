@@ -1,0 +1,12 @@
+# 默认代码归属人
+#
+# 该文件用于在 Pull Request 中自动请求审阅。
+# 语法：https://docs.github.com/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/about-code-owners
+
+*       @zhengdaodeguL
+
+# 安全与医疗边界相关改动需要更严格的审阅
+/backend/app/safety.py       @zhengdaodeguL
+/backend/app/sql_guard.py    @zhengdaodeguL
+/backend/app/auth.py         @zhengdaodeguL
+/SECURITY.md                 @zhengdaodeguL
