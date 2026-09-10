@@ -233,7 +233,7 @@ class SessionStore:
         if status == "completed":
             state = self.get(session_id)
             if state is None:
-                raise SessionConflictError("会话已过期，请重新发起问诊")
+                raise SessionConflictError("会话已过期，请重新发起整理")
             result = state.get("request_results", {}).get(request_id)
             if isinstance(result, dict):
                 return None, merge_request_result(state, result)
@@ -243,7 +243,7 @@ class SessionStore:
         if status == "pending":
             raise SessionConflictError("同一请求正在处理中，请稍后重试或查询请求结果")
         if status == "missing":
-            raise SessionConflictError("会话已过期，请重新发起问诊")
+            raise SessionConflictError("会话已过期，请重新发起整理")
         raise SessionBackendError("共享会话后端返回了无效的请求状态")
 
     def release_request_claim(
@@ -315,7 +315,7 @@ class SessionStore:
                 self._purge_expired()
                 current = self._sessions.get(session_id)
                 if current is None and expected_version is not None:
-                    raise SessionConflictError("会话已过期，请重新发起问诊")
+                    raise SessionConflictError("会话已过期，请重新发起整理")
                 current_version = int(current.get("_version", 0)) if current else 0
                 if current is not None and expected_version is not None and current_version != expected_version:
                     raise SessionConflictError(

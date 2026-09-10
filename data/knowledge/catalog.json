@@ -11,7 +11,7 @@
   },
   {
     "id": "disease-fever-001",
-    "title": "发热的分流信息",
+    "title": "发热的就医指引",
     "category": "disease",
     "source": "MedlinePlus / NLM / NIH",
     "source_url": "https://medlineplus.gov/ency/article/003090.htm",
@@ -61,9 +61,9 @@
   },
   {
     "id": "department-respiratory-001",
-    "title": "呼吸道症状的就诊科室建议",
+    "title": "呼吸道症状的就诊方向建议",
     "category": "department",
-    "source": "NHS；MedGuide 导诊映射",
+    "source": "NHS；MedGuide 就诊方向映射",
     "source_url": "https://www.nhs.uk/symptoms/shortness-of-breath/",
     "updated_at": "2024-01-30",
     "tags": ["呼吸内科", "咳嗽", "气促"],
@@ -71,9 +71,9 @@
   },
   {
     "id": "department-skin-001",
-    "title": "皮疹与瘙痒的科室建议",
+    "title": "皮疹与瘙痒的就诊方向建议",
     "category": "department",
-    "source": "NHS；MedGuide 导诊映射",
+    "source": "NHS；MedGuide 就诊方向映射",
     "source_url": "https://www.nhs.uk/conditions/allergies/",
     "updated_at": "2026-03-05",
     "tags": ["皮肤科", "皮疹", "瘙痒"],
@@ -81,12 +81,12 @@
   },
   {
     "id": "faq-visit-001",
-    "title": "线上问诊前准备哪些信息",
+    "title": "远程咨询前准备哪些信息",
     "category": "faq",
     "source": "Telehealth.HHS.gov；MedGuide 隐私规则",
     "source_url": "https://telehealth.hhs.gov/providers/preparing-patients-for-telehealth/helping-patients-prepare-for-their-appointment",
     "updated_at": "2025-05-29",
-    "tags": ["问诊", "病史", "准备"],
+    "tags": ["远程咨询", "病史", "准备"],
     "text": "建议准备年龄、性别、主要症状、开始时间、变化趋势、伴随症状、既往病史、过敏史和正在使用的药物。不要上传身份证号、完整病历号等不必要的身份信息。"
   },
   {
@@ -106,6 +106,6 @@
     "source": "MedGuide 医疗知识库 / 服务说明",
     "updated_at": "2026-06-01",
     "tags": ["MedGuide", "服务边界", "替代医生", "诊断"],
-    "text": "MedGuide 用于整理健康信息、筛查风险信号、解释常见医学资料和推荐就诊科室，不能替代执业医生完成诊断、开具处方或调整用药。症状持续、加重或存在高风险信号时，应及时联系医疗机构。"
+    "text": "MedGuide 用于整理健康信息、筛查风险信号、解释常见医学资料和推荐就诊方向，不能替代执业医生完成诊断、开具处方或调整用药。症状持续、加重或存在高风险信号时，应及时联系医疗机构。"
   }
 ]

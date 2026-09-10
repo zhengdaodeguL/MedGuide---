@@ -17,7 +17,7 @@ from .sql_guard import ReadOnlySQLGuard
 
 NODE_LABELS = {
     "normalize": "清理输入",
-    "extract_profile": "抽取问诊要素",
+    "extract_profile": "抽取信息要素",
     "intent": "识别咨询意图",
     "risk": "筛查风险信号",
     "retrieve": "检索可信知识",
@@ -231,7 +231,7 @@ class MedGuideWorkflow:
                 # A runtime graph failure may occur after retrieval, SQL, or
                 # model calls. Replaying from normalize would duplicate those
                 # side effects, so compatibility fallback is compile-time only.
-                raise WorkflowExecutionError("问诊工作流执行失败，请稍后重试") from exc
+                raise WorkflowExecutionError("整理工作流执行失败，请稍后重试") from exc
         nodes = (
             self.normalize,
             self.extract_profile,

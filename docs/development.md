@@ -5,7 +5,7 @@
 ```text
 backend/app/       FastAPI 接口、领域服务与基础设施适配器
 backend/tests/     单元、接口、回归与安全测试
-frontend/src/      React 医疗问诊工作台
+frontend/src/      React 健康信息整理工作台
 data/knowledge/    经过来源审核的知识条目
 docs/              设计、架构、运行和质量说明
 ```
@@ -22,7 +22,7 @@ docs/              设计、架构、运行和质量说明
 
 节点顺序固定为：`normalize → extract_profile → intent → risk → retrieve → structured_query → draft → safety_review → finalize`。
 
-节点接收并返回可序列化状态，副作用必须可观测且可测试。风险为 `high` 时，生成节点只能输出就医分流与急救提示，不得输出诊断、处方或停药建议。
+节点接收并返回可序列化状态，副作用必须可观测且可测试。风险为 `high` 时，生成节点只能输出就医指引与急救提示，不得输出诊断、处方或停药建议。
 
 ## API 契约
 

@@ -134,7 +134,7 @@ const initialMessage: Message = {
   role: "assistant",
   timestamp: Date.now(),
   content:
-    "你好，我是 MedGuide。可以帮你整理症状、判断就医紧迫性、推荐科室，并解释常见药品与检查注意事项。先告诉我：现在最困扰你的症状是什么？",
+    "你好，我是 MedGuide。可以帮你整理健康信息、判断就医紧迫性、推荐就诊方向，并解释常见药品与检查注意事项。先说说：现在最困扰你的症状是什么？",
 };
 
 function formatTime(date = new Date()) {
@@ -181,12 +181,12 @@ function formatHttpError(error: HttpResponseError) {
       return "输入未通过校验，请确认描述不为空且不超过 2000 字后重试。";
     case 401:
     case 403:
-      return "当前问诊服务未授权，请联系管理员检查服务配置。";
+      return "当前整理服务未授权，请联系管理员检查服务配置。";
     case 404:
-      return "当前会话已过期，请新建问诊后重试。";
+      return "当前会话已过期，请新建整理后重试。";
     case 409:
       if (error.detail?.includes("请求上限") || error.detail?.includes("回放窗口")) {
-        return "当前会话无法继续安全重放，请新建问诊后继续。";
+        return "当前会话无法继续安全重放，请新建整理后继续。";
       }
       return "会话刚刚被其他请求更新，请确认输入后重试。";
     case 426:
@@ -195,8 +195,8 @@ function formatHttpError(error: HttpResponseError) {
       return "请求过于频繁，请稍后再试。";
     default:
       return error.status >= 500
-        ? "问诊服务暂时不可用，请稍后重试。"
-        : `问诊服务返回错误（HTTP ${error.status}），请稍后重试。`;
+        ? "整理服务暂时不可用，请稍后重试。"
+        : `整理服务返回错误（HTTP ${error.status}），请稍后重试。`;
   }
 }
 
@@ -229,8 +229,8 @@ function categoryLabel(category: string) {
     disease: "疾病资料",
     drug: "药品资料",
     exam: "检查资料",
-    department: "导诊规则",
-    faq: "就诊 FAQ",
+    department: "就诊方向",
+    faq: "服务 FAQ",
   };
   return labels[category] || category;
 }
@@ -555,7 +555,7 @@ function App() {
         activeSessionIdRef.current = null;
         setSession(null);
         setSessionStatus("error");
-        setError(requestError instanceof HttpResponseError ? formatHttpError(requestError) : "问诊服务暂不可用，请稍后重试。");
+        setError(requestError instanceof HttpResponseError ? formatHttpError(requestError) : "整理服务暂不可用，请稍后重试。");
       } finally {
         if (sessionRequestRef.current === controller) sessionRequestRef.current = null;
       }
@@ -572,7 +572,7 @@ function App() {
     }
     const sessionId = activeSessionIdRef.current;
     if (!sessionId) {
-      setError("问诊会话仍在建立，请稍候再试。");
+      setError("整理会话仍在建立，请稍候再试。");
       return;
     }
     const generation = generationRef.current;
@@ -632,7 +632,7 @@ function App() {
       pendingRetryRef.current = { sessionId, text, requestId };
       setError(requestError instanceof HttpResponseError
         ? formatHttpError(requestError)
-        : "暂时无法连接问诊服务，请检查网络或稍后重试。你的输入已保留。");
+        : "暂时无法连接整理服务，请检查网络或稍后重试。你的输入已保留。");
     } finally {
       if (requestIsCurrent(generation, controller, sessionId)) setLoading(false);
       if (chatRequestRef.current === controller) chatRequestRef.current = null;
@@ -816,7 +816,7 @@ function App() {
       ? "建立安全会话"
       : session.network_enabled === false
         ? "知识服务受限"
-        : "问诊服务在线";
+        : "整理服务在线";
   const riskLabel = risk === "high"
     ? "需要立即就医"
     : risk === "watch"
@@ -839,7 +839,7 @@ function App() {
           <div className="brand-mark"><HeartPulse size={18} strokeWidth={2.4} /></div>
           <div>
             <div className="brand-name">MedGuide</div>
-            <div className="brand-subtitle">健康信息与就医分流</div>
+            <div className="brand-subtitle">健康信息整理与就医指引</div>
           </div>
         </div>
         <div className="topbar-meta">
@@ -874,18 +874,18 @@ function App() {
           tabIndex={mobilePanel === "left" ? -1 : undefined}
         >
           <div className="rail-heading">
-            <span className="eyebrow" id="session-panel-title">问诊管理</span>
+            <span className="eyebrow" id="session-panel-title">整理管理</span>
             <div className="rail-heading-actions">
-              <button className="icon-button" onClick={newConversation} aria-label="新建问诊"><Plus size={17} /></button>
+              <button className="icon-button" onClick={newConversation} aria-label="新建整理"><Plus size={17} /></button>
               <button className="icon-button close-mobile" onClick={closeMobilePanel} aria-label="关闭会话列表"><X size={16} /></button>
             </div>
           </div>
-          <button className="new-session-button" onClick={newConversation}><Plus size={16} />新建问诊</button>
-          <div className="rail-section-label"><MessageCircle size={13} />当前问诊</div>
+          <button className="new-session-button" onClick={newConversation}><Plus size={16} />新建整理</button>
+          <div className="rail-section-label"><MessageCircle size={13} />当前整理</div>
           <div className="conversation-list">
             <button className="conversation-item active" onClick={closeMobilePanel}>
               <span className="conversation-icon"><MessageCircle size={16} /></span>
-              <span className="conversation-copy"><strong>当前问诊</strong><span>{messages.length > 1 ? `${messages.length - 1} 条消息` : "等待输入"}</span></span>
+              <span className="conversation-copy"><strong>当前整理</strong><span>{messages.length > 1 ? `${messages.length - 1} 条消息` : "等待输入"}</span></span>
             </button>
             <div className="conversation-empty">暂无其他可恢复会话</div>
           </div>
@@ -898,7 +898,7 @@ function App() {
           <div className="chat-header">
             <div>
               <div className="eyebrow">健康信息整理</div>
-              <h1>问诊</h1>
+              <h1>信息整理</h1>
             </div>
             <div className="chat-header-actions">
               <span className={`risk-chip ${risk}`}><span className="risk-chip-dot" />{riskLabel}</span>
@@ -919,7 +919,7 @@ function App() {
               <span><span className="fact-label">性别</span>{profile.sex || "待补充"}</span>
               <span><span className="fact-label">症状</span>{profile.chief_complaint || "待采集"}</span>
             </div>
-            <div className="turn-count"><span>问诊轮次</span><strong>{session?.turn_count ?? 0}</strong></div>
+            <div className="turn-count"><span>整理轮次</span><strong>{session?.turn_count ?? 0}</strong></div>
           </div>
 
           <div className="messages-scroller">
@@ -941,7 +941,7 @@ function App() {
             {loading && (
               <article className="message-row assistant loading-row">
                 <div className="message-avatar assistant-avatar"><Sparkles size={16} /></div>
-                <div className="message-content"><div className="message-meta"><strong>MedGuide</strong><span>正在编排问诊流程</span></div><div className="loading-bubble"><span /><span /><span /></div></div>
+                <div className="message-content"><div className="message-meta"><strong>MedGuide</strong><span>正在编排整理流程</span></div><div className="loading-bubble"><span /><span /><span /></div></div>
               </article>
             )}
             <div ref={bottomRef} />
@@ -949,10 +949,10 @@ function App() {
 
           <div className="composer-wrap">
              <form className="composer" onSubmit={(event) => void sendMessage(event)}>
-              <textarea value={draft} onChange={(event) => setDraft(event.target.value)} onKeyDown={handleComposerKeyDown} placeholder="描述你的症状，或询问用药须知、报告解读和科室选择…" rows={2} maxLength={2000} disabled={loading} />
-              <div className="composer-bottom"><span className="composer-hint"><Info size={13} />请勿输入身份信息，内容将用于当前问诊</span><button className="send-button" type="submit" disabled={!draft.trim() || loading || !session} aria-label="发送消息"><Send size={17} /></button></div>
+              <textarea value={draft} onChange={(event) => setDraft(event.target.value)} onKeyDown={handleComposerKeyDown} placeholder="描述你的症状，或询问用药须知、报告解读和就诊方向…" rows={2} maxLength={2000} disabled={loading} />
+              <div className="composer-bottom"><span className="composer-hint"><Info size={13} />请勿输入身份信息，内容将用于当前整理</span><button className="send-button" type="submit" disabled={!draft.trim() || loading || !session} aria-label="发送消息"><Send size={17} /></button></div>
             </form>
-            <div className="composer-disclaimer">MedGuide 提供健康信息整理与就医分流，不替代医生诊断、处方或急救服务。</div>
+            <div className="composer-disclaimer">MedGuide 提供健康信息整理与就医指引，不替代医生诊断、处方或急救服务。</div>
           </div>
         </main>
 
@@ -970,13 +970,13 @@ function App() {
             <div className="risk-heading"><div className="risk-icon">{risk === "high" ? <AlertTriangle size={17} /> : risk === "unknown" ? <Info size={17} /> : <ShieldCheck size={17} />}</div><div><span className="section-kicker">安全筛查</span><h2>{riskHeading}</h2></div></div>
             {session?.risk_flags?.length
               ? <div className="risk-flags">{session.risk_flags.map((flag) => <span key={flag}>{flag}</span>)}</div>
-              : <p>{riskAssessed ? "已完成规则筛查，继续补充信息后会动态更新。" : "尚未收到有效问诊信息，当前不能给出风险结论。"}</p>}
+              : <p>{riskAssessed ? "已完成规则筛查，继续补充信息后会动态更新。" : "尚未收到有效信息，当前不能给出风险结论。"}</p>}
             <div className="risk-meter"><span className="meter-label">风险等级</span><div className="meter-track"><span className="meter-fill" /></div><strong>{risk === "high" ? "HIGH" : risk === "watch" ? "WATCH" : risk === "low" ? "LOW" : "UNKNOWN"}</strong></div>
           </section>
 
-          <section className="panel-section profile-section"><div className="section-heading"><div><span className="section-kicker">结构化状态</span><h2>问诊要素</h2></div><Activity size={16} /></div><div className="profile-grid"><ProfileField label="主要症状" value={profile.chief_complaint as string} /><ProfileField label="持续时间" value={profile.duration as string} /><ProfileField label="伴随症状" value={Array.isArray(profile.associated_symptoms) ? profile.associated_symptoms.join("、") : undefined} /><ProfileField label="既往史" value={profile.history as string} /></div>{session?.summary && <div className="summary-box"><span>问诊摘要</span><p>{session.summary}</p></div>}</section>
+          <section className="panel-section profile-section"><div className="section-heading"><div><span className="section-kicker">结构化状态</span><h2>整理要素</h2></div><Activity size={16} /></div><div className="profile-grid"><ProfileField label="主要症状" value={profile.chief_complaint as string} /><ProfileField label="持续时间" value={profile.duration as string} /><ProfileField label="伴随症状" value={Array.isArray(profile.associated_symptoms) ? profile.associated_symptoms.join("、") : undefined} /><ProfileField label="既往史" value={profile.history as string} /></div>{session?.summary && <div className="summary-box"><span>整理摘要</span><p>{session.summary}</p></div>}</section>
 
-          <section className="panel-section pipeline-section"><div className="section-heading"><div><span className="section-kicker">可观察工作流</span><h2>节点进度</h2></div><span className="pipeline-count">{events.filter((event) => event.node).length}/9</span></div><div className="pipeline-list">{["清理输入", "抽取问诊要素", "识别咨询意图", "筛查风险信号", "检索可信知识", "执行结构化查询", "生成可读建议", "执行安全审查", "整理引用与摘要"].map((label, index) => { const complete = events.length > index; return <div className={`pipeline-item ${complete ? "complete" : ""}`} key={label}><span className="pipeline-index">{complete ? <Check size={11} /> : String(index + 1).padStart(2, "0")}</span><span>{label}</span>{complete && <small>{events[index]?.elapsed_ms ?? 0}ms</small>}</div>; })}</div></section>
+          <section className="panel-section pipeline-section"><div className="section-heading"><div><span className="section-kicker">可观察工作流</span><h2>节点进度</h2></div><span className="pipeline-count">{events.filter((event) => event.node).length}/9</span></div><div className="pipeline-list">{["清理输入", "抽取信息要素", "识别咨询意图", "筛查风险信号", "检索可信知识", "执行结构化查询", "生成可读建议", "执行安全审查", "整理引用与摘要"].map((label, index) => { const complete = events.length > index; return <div className={`pipeline-item ${complete ? "complete" : ""}`} key={label}><span className="pipeline-index">{complete ? <Check size={11} /> : String(index + 1).padStart(2, "0")}</span><span>{label}</span>{complete && <small>{events[index]?.elapsed_ms ?? 0}ms</small>}</div>; })}</div></section>
 
           <section className="panel-section evidence-section"><div className="section-heading"><div><span className="section-kicker">知识库命中</span><h2>参考资料 <span>{citations.length}</span></h2></div><BookOpen size={16} /></div>{citations.length ? <div className="evidence-list">{citations.map((citation) => { const sourceUrl = safeCitationSourceUrl(citation.source_url); return <div className="evidence-item" key={citation.id}><div className="evidence-item-top"><span className="evidence-type">{categoryLabel(citation.category)}</span><span className="evidence-score">{Math.round(citation.score * 100)}%</span></div><strong>{citation.title}</strong><p>{citation.snippet}</p><div className="evidence-source"><span>{citation.source} · {citation.updated_at}</span>{sourceUrl && <a href={sourceUrl} target="_blank" rel="noreferrer" aria-label={`查看来源：${citation.title}`}>查看原文<ArrowUpRight size={11} /></a>}</div></div>; })}</div> : <div className="empty-state"><BookOpen size={18} /><p>发送一条症状或知识问题，相关引用会出现在这里。</p></div>}</section>
 
@@ -1067,15 +1067,15 @@ function AuthScreen({ status, bootstrapError, onAuthenticated, onRetryConnection
       <section className="auth-context" aria-labelledby="auth-product-name">
         <div className="auth-brand-lockup">
           <div className="auth-brand-mark"><HeartPulse size={24} strokeWidth={2.3} /></div>
-          <div><span>MEDGUIDE</span><small>医疗智慧问诊与导诊</small></div>
+          <div><span>MEDGUIDE</span><small>健康信息整理与就医指引</small></div>
         </div>
         <div className="auth-product-copy">
            <span className="section-kicker">HEALTH INFORMATION ROUTING</span>
           <h1 id="auth-product-name">MedGuide</h1>
           <p>在一个受保护的工作区内整理症状、完成风险筛查并查看可追溯的健康资料。</p>
         </div>
-        <div className="auth-safety-note"><ShieldCheck size={17} /><span>请勿使用姓名、证件号或联系方式作为用户名，也不要在问诊中提交可识别个人身份的信息。</span></div>
-        <p className="auth-medical-note">MedGuide 提供健康信息与就医分流，不替代医生诊断、处方或急救服务。</p>
+        <div className="auth-safety-note"><ShieldCheck size={17} /><span>请勿使用姓名、证件号或联系方式作为用户名，也不要在整理过程中提交可识别个人身份的信息。</span></div>
+        <p className="auth-medical-note">MedGuide 提供健康信息整理与就医指引，不替代医生诊断、处方或急救服务。</p>
       </section>
 
       <section className="auth-panel" aria-labelledby="auth-heading">
@@ -1089,7 +1089,7 @@ function AuthScreen({ status, bootstrapError, onAuthenticated, onRetryConnection
             <div className="auth-panel-heading">
               <span className="section-kicker">账户访问</span>
               <h2 id="auth-heading">{mode === "login" ? "登录 MedGuide" : "创建账户"}</h2>
-              <p>{mode === "login" ? "使用你的 MedGuide 账户继续问诊。" : "用户名将作为你的唯一账户标识。"}</p>
+              <p>{mode === "login" ? "使用你的 MedGuide 账户继续整理。" : "用户名将作为你的唯一账户标识。"}</p>
             </div>
 
             <div className="auth-mode-switch" aria-label="选择账户操作">

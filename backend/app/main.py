@@ -649,7 +649,7 @@ def _check_request_fingerprint(state: WorkflowState, request_id: str | None, mes
             raise SessionConflictError("请求结果已超过回放窗口，不能重新执行")
         return
     if isinstance(fingerprints, dict) and len(fingerprints) >= MAX_REQUESTS_PER_SESSION:
-        raise SessionConflictError("当前会话已达到请求上限，请新建问诊后继续")
+        raise SessionConflictError("当前会话已达到请求上限，请新建整理后继续")
 
 
 def _prepare_persisted_result(
@@ -697,7 +697,7 @@ def _run_chat_transaction(current: AppServices, state: WorkflowState) -> Workflo
             # while another turn committed a newer profile/version.
             latest = current.store.get(session_id)
             if latest is None:
-                raise SessionConflictError("会话已过期，请重新发起问诊")
+                raise SessionConflictError("会话已过期，请重新发起整理")
             _check_request_fingerprint(latest, request_id, str(state.get("user_message", "")))
             replay = _stored_request_result(latest, request_id)
             if replay is not None:
@@ -716,7 +716,7 @@ def _run_chat_transaction(current: AppServices, state: WorkflowState) -> Workflo
             )
             authoritative = current.store.get(session_id)
             if authoritative is None:
-                raise SessionConflictError("会话已过期，请重新发起问诊")
+                raise SessionConflictError("会话已过期，请重新发起整理")
             if authoritative.get("_version") != expected_version:
                 raise SessionConflictError("会话已被其他请求更新，请重试")
             request_claim = (
@@ -1005,7 +1005,7 @@ def chat(
         _session_token_from_request(current, http_request),
     )
     if current.production and not request.request_id:
-        raise HTTPException(status_code=400, detail="生产问诊请求必须提供 request_id 以保证幂等")
+        raise HTTPException(status_code=400, detail="生产整理请求必须提供 request_id 以保证幂等")
     try:
         state = _state_for_request(current, request, owner_id=owner_id)
     except SessionAuthorizationError as exc:
@@ -1062,7 +1062,7 @@ def stream_chat(current: AppServices, state: WorkflowState) -> StreamingResponse
                 try:
                     latest = current.store.get(session_id)
                     if latest is None:
-                        raise SessionConflictError("会话已过期，请重新发起问诊")
+                        raise SessionConflictError("会话已过期，请重新发起整理")
                     _check_request_fingerprint(latest, request_id, str(state.get("user_message", "")))
                     replay = _stored_request_result(latest, request_id)
                     if replay is not None:
@@ -1086,7 +1086,7 @@ def stream_chat(current: AppServices, state: WorkflowState) -> StreamingResponse
                     )
                     authoritative = current.store.get(session_id)
                     if authoritative is None:
-                        raise SessionConflictError("会话已过期，请重新发起问诊")
+                        raise SessionConflictError("会话已过期，请重新发起整理")
                     if authoritative.get("_version") != expected_version:
                         raise SessionConflictError("会话已被其他请求更新，请重试")
                     request_claim = (
@@ -1124,7 +1124,7 @@ def stream_chat(current: AppServices, state: WorkflowState) -> StreamingResponse
                 schedule(("error", {"status": 503, "message": "外部生成服务暂时不可用，请稍后重试"}))
             except Exception:
                 # Do not expose provider/database internals through SSE.
-                schedule(("error", {"status": 500, "message": "问诊服务暂时不可用，请稍后重试"}))
+                schedule(("error", {"status": 500, "message": "整理服务暂时不可用，请稍后重试"}))
             finally:
                 schedule(("done", None))
 
