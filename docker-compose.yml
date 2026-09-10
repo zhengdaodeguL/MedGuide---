@@ -1,0 +1,89 @@
+services:
+  medguide-api:
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
+    environment:
+      MEDGUIDE_MODE: ${MEDGUIDE_MODE:-production}
+      MEDGUIDE_CORS_ORIGINS: ${MEDGUIDE_CORS_ORIGINS:-}
+      MEDGUIDE_ADAPTER_TIMEOUT: ${MEDGUIDE_ADAPTER_TIMEOUT:-0.75}
+      MEDGUIDE_ADAPTER_RETRY_SECONDS: ${MEDGUIDE_ADAPTER_RETRY_SECONDS:-5}
+      MEDGUIDE_READINESS_CACHE_SECONDS: ${MEDGUIDE_READINESS_CACHE_SECONDS:-5}
+      MEDGUIDE_API_TOKENS: ${MEDGUIDE_API_TOKENS:-}
+      MEDGUIDE_SESSION_TTL_SECONDS: ${MEDGUIDE_SESSION_TTL_SECONDS:-86400}
+      MEDGUIDE_AUTH_DB_PATH: ${MEDGUIDE_AUTH_DB_PATH:-/app/data/runtime/auth.sqlite3}
+      MEDGUIDE_AUTH_BACKEND: ${MEDGUIDE_AUTH_BACKEND:-mysql}
+      MEDGUIDE_AUTH_DSN: ${MEDGUIDE_AUTH_DSN:-}
+      MEDGUIDE_ALLOW_SQLITE_AUTH: ${MEDGUIDE_ALLOW_SQLITE_AUTH:-false}
+      MEDGUIDE_AUTH_SESSION_TTL_SECONDS: ${MEDGUIDE_AUTH_SESSION_TTL_SECONDS:-604800}
+      MEDGUIDE_AUTH_COOKIE_NAME: ${MEDGUIDE_AUTH_COOKIE_NAME:-medguide_session}
+      MEDGUIDE_COOKIE_SECURE: ${MEDGUIDE_COOKIE_SECURE:-true}
+      MEDGUIDE_REQUIRE_HTTPS: ${MEDGUIDE_REQUIRE_HTTPS:-true}
+      MEDGUIDE_NETWORK_SUBNET: ${MEDGUIDE_NETWORK_SUBNET-172.30.0.0/16}
+      MEDGUIDE_API_TRUSTED_PROXY_CIDR: ${MEDGUIDE_NETWORK_SUBNET-172.30.0.0/16}
+      MEDGUIDE_KNOWLEDGE_BACKEND: ${MEDGUIDE_KNOWLEDGE_BACKEND:-milvus}
+      OPENAI_API_KEY: ${OPENAI_API_KEY:-}
+      OPENAI_BASE_URL: ${OPENAI_BASE_URL:-}
+      OPENAI_CHAT_BASE_URL: ${OPENAI_CHAT_BASE_URL:-}
+      OPENAI_MODEL: ${OPENAI_MODEL:-}
+      OPENAI_TIMEOUT_SECONDS: ${OPENAI_TIMEOUT_SECONDS:-15}
+      EMBEDDING_MODEL: ${EMBEDDING_MODEL:-text-embedding-3-small}
+      EMBEDDING_API_KEY: ${EMBEDDING_API_KEY:-}
+      EMBEDDING_BASE_URL: ${EMBEDDING_BASE_URL:-}
+      EMBEDDING_VERSION: ${EMBEDDING_VERSION:-1}
+      EMBEDDING_DIMENSION: ${EMBEDDING_DIMENSION:-1536}
+      EMBEDDING_TIMEOUT_SECONDS: ${EMBEDDING_TIMEOUT_SECONDS:-15}
+      MILVUS_URI: ${MILVUS_URI:-}
+      MILVUS_COLLECTION: ${MILVUS_COLLECTION:-medguide_knowledge}
+      MILVUS_VECTOR_FIELD: ${MILVUS_VECTOR_FIELD:-embedding}
+      MILVUS_VECTOR_DIMENSION: ${MILVUS_VECTOR_DIMENSION:-1536}
+      MILVUS_METRIC_TYPE: ${MILVUS_METRIC_TYPE:-COSINE}
+      MILVUS_SCORE_THRESHOLD: ${MILVUS_SCORE_THRESHOLD:-0.2}
+      BM25_INDEX_PATH: ${BM25_INDEX_PATH:-/app/data/runtime/bm25-index.json}
+      MYSQL_DSN: ${MYSQL_DSN:-}
+      REDIS_URL: ${REDIS_URL:-}
+    expose:
+      - "8000"
+    volumes:
+      - medguide_runtime:/app/data/runtime
+  medguide-ui:
+    build:
+      context: .
+      dockerfile: frontend/Dockerfile
+    expose:
+      - "80"
+    environment:
+      MEDGUIDE_NETWORK_SUBNET: ${MEDGUIDE_NETWORK_SUBNET-172.30.0.0/16}
+      MEDGUIDE_TRUSTED_PROXY_CIDR: ${MEDGUIDE_NETWORK_SUBNET-172.30.0.0/16}
+      MEDGUIDE_REQUIRE_HTTPS: ${MEDGUIDE_REQUIRE_HTTPS:-true}
+      # Matches only the variable-name prefix used by the official Nginx
+      # entrypoint; the environment list contains names, not NAME=value text.
+      NGINX_ENVSUBST_FILTER: "^MEDGUIDE_(TRUSTED_PROXY_CIDR|REQUIRE_HTTPS)"
+    depends_on:
+      medguide-api:
+        condition: service_healthy
+  medguide-gateway:
+    build:
+      context: .
+      dockerfile: deploy/gateway/Dockerfile
+    environment:
+      MEDGUIDE_DOMAIN: ${MEDGUIDE_DOMAIN:-}
+    ports:
+      - "${MEDGUIDE_HTTP_PORT:-80}:80"
+      - "${MEDGUIDE_HTTPS_PORT:-443}:443"
+    volumes:
+      - medguide_caddy_data:/data
+      - medguide_caddy_config:/config
+    depends_on:
+      medguide-ui:
+        condition: service_healthy
+volumes:
+  medguide_runtime:
+  medguide_caddy_data:
+  medguide_caddy_config:
+
+networks:
+  default:
+    ipam:
+      config:
+        - subnet: ${MEDGUIDE_NETWORK_SUBNET:-172.30.0.0/16}
