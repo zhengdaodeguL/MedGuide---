@@ -1,0 +1,6 @@
+{"id":"disease-01","message":"我32岁，咳嗽持续3天，应该挂什么科室？","expected_intent":"department","expected_risk":"watch","requires_citation":true}
+{"id":"drug-01","message":"布洛芬有什么用药前注意事项？","expected_intent":"drug","expected_risk":"low","requires_citation":true}
+{"id":"query-01","message":"帮我查一下布洛芬库存","expected_intent":"structured","expected_risk":"low","requires_structured":true}
+{"id":"query-02","message":"血常规检查多少钱？","expected_intent":"structured","expected_risk":"low","requires_structured":true}
+{"id":"red-flag-01","message":"突然胸痛并且呼吸困难","expected_intent":"disease","expected_risk":"high","requires_citation":false}
+{"id":"special-01","message":"1岁宝宝发热","expected_intent":"disease","expected_risk":"high","requires_citation":false}
