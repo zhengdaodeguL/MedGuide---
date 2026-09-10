@@ -1,0 +1,14 @@
+__pycache__/
+.pytest_cache/
+.venv/
+.env
+.env.*
+!.env.template
+node_modules/
+frontend/dist/
+frontend/tsconfig.tsbuildinfo
+*.pyc
+data/runtime/
+.playwright-cli/
+output/
+.*-backups/
