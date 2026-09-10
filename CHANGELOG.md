@@ -2,7 +2,7 @@
 
 本文件记录 MedGuide 的对外版本变更。版本号遵循 [语义化版本](https://semver.org/lang/zh-CN/)。
 
-## [Unreleased]
+## [0.1.0] - 2026-09-10
 
 ### 新增
 
@@ -20,4 +20,4 @@
 - 仓库自带的 `data/knowledge/catalog.json` 是体量很小的演示语料，仅用于跑通链路与本地验证，
   不构成可用于生产的医学知识库。上线前必须替换为自行取得授权的语料并重建索引。
 
-[Unreleased]: https://github.com/zhengdaodeguL/MedGuide--/commits/main
+[0.1.0]: https://github.com/zhengdaodeguL/MedGuide--/releases/tag/v0.1.0

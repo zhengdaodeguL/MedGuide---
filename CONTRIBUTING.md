@@ -30,6 +30,7 @@
 
 ```powershell
 $ErrorActionPreference = 'Stop'
+.\.venv\Scripts\python.exe scripts\check_version.py
 .\.venv\Scripts\python.exe -m pytest -q backend\tests
 .\.venv\Scripts\python.exe scripts\evaluate.py
 Push-Location frontend
@@ -37,6 +38,13 @@ npm run build
 Pop-Location
 docker compose config --quiet
 ```
+
+## 版本号
+
+版本号只有一处真源：`backend/app/version.py` 的 `__version__`。发布新版本时同步修改
+`frontend/package.json` 的 `version` 和 `CHANGELOG.md` 顶部新增的 `## [x.y.z]` 标题，
+然后运行 `scripts/check_version.py` 确认三处一致；CI 会在不一致时直接失败。
+打 tag 用 `v` 前缀（例如 `v0.1.0`），与 CHANGELOG 底部的链接保持一致。
 
 ## Pull Request
 

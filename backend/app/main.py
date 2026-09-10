@@ -46,6 +46,7 @@ from .store import (
     merge_request_result,
 )
 from .workflow import MedGuideWorkflow, WorkflowCancelled, WorkflowExecutionError
+from .version import __version__
 
 
 MAX_REQUESTS_PER_SESSION = 256
@@ -400,7 +401,7 @@ _IMPORT_MODE = os.getenv("MEDGUIDE_MODE", "production").strip().lower() or "prod
 _IMPORT_PRODUCTION = _IMPORT_MODE not in {"offline", "test"}
 app = FastAPI(
     title="MedGuide API",
-    version="0.1.0",
+    version=__version__,
     lifespan=lifespan,
     # API documentation is useful in explicit test modes, but exposing an
     # interactive schema in production creates an unnecessary attack surface.
@@ -792,6 +793,7 @@ def health() -> dict[str, Any]:
     return {
         "status": "ok",
         "live": True,
+        "version": __version__,
         "mode": current.mode,
         "environment": current.mode if not current.production else "production",
         "auth_configured": bool(getattr(current, "auth", None)),

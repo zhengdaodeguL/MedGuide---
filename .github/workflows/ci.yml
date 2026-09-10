@@ -23,6 +23,7 @@ jobs:
       - run: python -m pip install -r backend/requirements.txt
       - run: python -m pip check
       - run: python -m compileall -q backend/app scripts
+      - run: python scripts/check_version.py
       - run: python -m pytest -q backend/tests
       - run: python scripts/evaluate.py
 
