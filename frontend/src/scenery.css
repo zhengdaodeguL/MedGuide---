@@ -1,0 +1,264 @@
+.scenic-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  pointer-events: none;
+  background: var(--scenic-mint);
+  isolation: isolate;
+}
+
+.scenic-landscape,
+.scenic-landscape-image,
+.scenic-wash {
+  position: absolute;
+  inset: 0;
+}
+
+/* Nearby pale colors crossfade; matching endpoints keep the 36s loop seamless.
+   Only transforms and opacity animate, so the gradients do not repaint per frame. */
+.scenic-color-field {
+  position: absolute;
+  inset: -12%;
+}
+
+.scenic-color-base {
+  background: linear-gradient(125deg, var(--scenic-mint) 8%, var(--scenic-blue) 54%, var(--scenic-cream) 100%);
+  animation: scenic-color-drift 36s ease-in-out infinite;
+}
+
+.scenic-color-cool {
+  opacity: 0;
+  background: linear-gradient(145deg, var(--scenic-blue) 4%, var(--scenic-mint) 62%, var(--scenic-blue) 100%);
+  animation: scenic-color-cool-cycle 36s ease-in-out infinite;
+}
+
+.scenic-color-warm {
+  opacity: 0;
+  background: linear-gradient(115deg, var(--scenic-cream) 5%, var(--scenic-mint) 64%, var(--scenic-cream) 100%);
+  animation: scenic-color-warm-cycle 36s ease-in-out infinite;
+}
+
+/* Photography stays as a faint texture under a light, readable wash. */
+.auth-shell .scenic-wash {
+  background:
+    linear-gradient(90deg, rgba(249, 251, 247, .16), transparent 58%, rgba(249, 251, 247, .04)),
+    linear-gradient(180deg, rgba(249, 251, 247, .06), transparent 48%, rgba(249, 251, 247, .12));
+}
+
+.scenic-landscape {
+  opacity: 0;
+  transition: opacity 1.6s ease;
+}
+
+.scenic-landscape[data-active="true"] { opacity: .14; }
+
+.scenic-landscape-image {
+  inset: -3%;
+  background-size: cover;
+  background-repeat: no-repeat;
+  animation: scenic-panorama 40s ease-in-out infinite alternate;
+}
+
+.scenic-landscape-lake {
+  background-image: url("/landscapes/mountain-lake.webp");
+  background-position: 50% 50%;
+}
+
+.scenic-landscape-forest {
+  background-image: url("/landscapes/forest-mist.webp");
+  background-position: 50% 55%;
+  animation-direction: alternate-reverse;
+}
+
+.scenic-landscape[data-active="false"] .scenic-landscape-image { animation-play-state: paused; }
+
+.scenic-wash {
+  background:
+    linear-gradient(90deg, rgba(249, 251, 247, .08), transparent 50%, rgba(249, 251, 247, .06)),
+    linear-gradient(180deg, rgba(249, 251, 247, .08), transparent 48%, rgba(249, 251, 247, .1));
+}
+
+.scenic-mist {
+  position: absolute;
+  width: 115%;
+  height: 65%;
+  border-radius: 50%;
+  background: radial-gradient(ellipse, rgba(249, 252, 247, .8) 0%, rgba(249, 252, 247, .3) 36%, transparent 68%);
+}
+
+.scenic-mist-near {
+  left: -16%;
+  bottom: -22%;
+  opacity: .48;
+  animation: scenic-mist-drift 18s ease-in-out -6s infinite alternate;
+}
+
+.scenic-mist-far {
+  top: 8%;
+  right: -42%;
+  opacity: .32;
+  animation: scenic-mist-drift 24s ease-in-out -13s infinite alternate-reverse;
+}
+
+.scenic-glow {
+  position: absolute;
+  top: -18%;
+  left: 28%;
+  width: 66%;
+  height: 76%;
+  opacity: .3;
+  background: radial-gradient(ellipse, rgba(255, 249, 220, .72), rgba(255, 251, 230, .15) 44%, transparent 69%);
+  animation: scenic-sunlight 20s ease-in-out -8s infinite alternate;
+}
+
+.scenic-light {
+  position: absolute;
+  display: block;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(255, 254, 242, .96), rgba(255, 246, 205, .36) 40%, transparent 72%);
+  box-shadow: 0 0 15px 4px rgba(255, 250, 220, .1);
+  opacity: .28;
+  animation: scenic-floating-light 19s ease-in-out infinite alternate;
+}
+
+.scenic-light-one { top: 34%; left: 21%; animation-delay: -5s; }
+.scenic-light-two { top: 67%; left: 75%; width: 10px; height: 10px; animation-duration: 23s; animation-delay: -12s; }
+.scenic-light-three { top: 18%; left: 84%; width: 5px; height: 5px; animation-duration: 17s; animation-delay: -9s; }
+
+.scenery-controls {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  max-width: 100%;
+  color: #36574c;
+}
+
+.scenery-scene-switch {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px;
+  border: 1px solid rgba(80, 115, 94, .17);
+  border-radius: 16px;
+  background: rgba(255, 255, 255, .5);
+}
+
+.scenery-scene-button,
+.scenery-motion-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  min-width: 44px;
+  min-height: 44px;
+  padding: 0 11px;
+  color: #36574c;
+  font-size: 11px;
+  line-height: 1.2;
+  font-weight: 500;
+  white-space: nowrap;
+  border: 0;
+  border-radius: 12px;
+  background: transparent;
+  transition: transform .18s ease, opacity .18s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.scenery-scene-button[aria-pressed="true"] {
+  color: #254d3d;
+  background: rgba(255, 255, 255, .9);
+  box-shadow: 0 2px 8px rgba(42, 68, 53, .06);
+}
+
+.scenery-motion-button {
+  color: #476757;
+  background: rgba(255, 255, 255, .38);
+  border: 1px solid rgba(80, 115, 94, .14);
+  border-radius: 15px;
+}
+
+.scenery-scene-button:focus-visible,
+.scenery-motion-button:focus-visible {
+  outline: 2px solid #31644d;
+  outline-offset: 3px;
+}
+
+.scenery-motion-button:disabled { cursor: default; opacity: .64; }
+
+@media (hover: hover) {
+  .scenery-scene-button:hover { background: rgba(255, 255, 255, .82); }
+  .scenery-motion-button:hover:not(:disabled) { background: rgba(255, 255, 255, .76); transform: translateY(-1px); }
+}
+
+@media (max-width: 560px) {
+  .scenery-controls { gap: 6px; }
+  .scenery-scene-button, .scenery-motion-button { padding: 0 10px; }
+  .scenic-landscape-lake { background-position: 56% 50%; }
+  .scenic-landscape-forest { background-position: 46% 55%; }
+  .scenic-mist { width: 150%; }
+}
+
+@keyframes scenic-panorama {
+  from { transform: scale(1.015) translate3d(-.8%, -.3%, 0); }
+  to { transform: scale(1.065) translate3d(1.2%, .8%, 0); }
+}
+
+@keyframes scenic-color-drift {
+  0%, 100% { transform: translate3d(-1%, 0, 0) scale(1.02); }
+  50% { transform: translate3d(2%, 1%, 0) scale(1.06); }
+}
+
+@keyframes scenic-color-cool-cycle {
+  0%, 100% { opacity: 0; transform: translate3d(-2%, 0, 0) scale(1.03); }
+  33.333% { opacity: .96; transform: translate3d(2%, -1%, 0) scale(1.08); }
+  66.667% { opacity: 0; transform: translate3d(0, 2%, 0) scale(1.05); }
+}
+
+@keyframes scenic-color-warm-cycle {
+  0%, 100% { opacity: 0; transform: translate3d(1%, -1%, 0) scale(1.03); }
+  33.333% { opacity: 0; transform: translate3d(0, 1%, 0) scale(1.06); }
+  66.667% { opacity: .96; transform: translate3d(-2%, 1%, 0) scale(1.04); }
+}
+
+@keyframes scenic-mist-drift {
+  from { transform: translate3d(-7%, 2%, 0) scale(.98); opacity: .12; }
+  to { transform: translate3d(7%, -3%, 0) scale(1.08); opacity: .3; }
+}
+
+@keyframes scenic-sunlight {
+  from { transform: translate3d(-4%, 1%, 0) scale(.96); opacity: .18; }
+  to { transform: translate3d(5%, -2%, 0) scale(1.08); opacity: .38; }
+}
+
+@keyframes scenic-floating-light {
+  0% { transform: translate3d(0, 12px, 0); opacity: .12; }
+  50% { opacity: .56; }
+  100% { transform: translate3d(28px, -24px, 0); opacity: .18; }
+}
+
+[data-motion="paused"] .scenic-motion,
+[data-motion="paused"] .ambient-motion,
+[data-motion="paused"] .ambient-motion::before,
+[data-motion="paused"] .ambient-motion::after,
+[data-motion="paused"] .ambient-motion * {
+  animation-play-state: paused !important;
+}
+
+[data-motion="paused"] .scenic-landscape { transition: none; }
+
+@media (prefers-reduced-motion: reduce) {
+  .scenic-motion,
+  .ambient-motion,
+  .ambient-motion::before,
+  .ambient-motion::after,
+  .ambient-motion * {
+    animation: none !important;
+  }
+
+  .scenic-landscape,
+  .scenery-scene-button,
+  .scenery-motion-button { transition: none; }
+}
